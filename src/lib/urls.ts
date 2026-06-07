@@ -97,10 +97,16 @@ export function buildYoutubeEmbedUrl(videoId: string): string {
   return `https://www.youtube.com/embed/${videoId}?${params.toString()}`
 }
 
+function getTwitchEmbedParent(override?: string): string {
+  if (override) return override
+  const fromEnv = import.meta.env.VITE_TWITCH_PARENT_HOST?.trim()
+  if (fromEnv) return fromEnv
+  return window.location.hostname
+}
+
 export function buildTwitchChatEmbedUrl(channel: string, parent?: string): string {
-  const hostname = parent ?? window.location.hostname
   const params = new URLSearchParams({
-    parent: hostname,
+    parent: getTwitchEmbedParent(parent),
     darkpopout: "",
   })
   return `https://www.twitch.tv/embed/${channel}/chat?${params.toString()}`
@@ -111,10 +117,9 @@ export function buildTwitchChannelUrl(channel: string): string {
 }
 
 export function buildTwitchPlayerEmbedUrl(channel: string, parent?: string): string {
-  const hostname = parent ?? window.location.hostname
   const params = new URLSearchParams({
     channel,
-    parent: hostname,
+    parent: getTwitchEmbedParent(parent),
     autoplay: "true",
   })
   return `https://player.twitch.tv/?${params.toString()}`
